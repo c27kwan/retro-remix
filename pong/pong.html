@@ -93,21 +93,6 @@
 			var middleY = rightPaddleY + PADDLE_HEIGHT/2;
 			if (ballSpeedX > 0) {
 				moveToTarget(ballY);
-				// if (ballY > middleY + BUFFER_REGION) {
-				// 	rPaddleSpeed = Math.min(MAXIMUM_SPEED, ballY - middleY - BUFFER_REGION);
-				// 	if (rightPaddleY + rPaddleSpeed > canvas.height) {
-				// 		rightPaddleY = canvas.height - PADDLE_HEIGHT/2;
-				// 	} else {
-				// 		rightPaddleY += rPaddleSpeed;		
-				// 	}
-				// } else if (ballY < middleY - BUFFER_REGION) {
-				// 	rPaddleSpeed = Math.max(MAXIMUM_SPEED * -1, ballY - middleY - BUFFER_REGION);
-				// 	if (rightPaddleY + rPaddleSpeed < -1 * PADDLE_HEIGHT/2){
-				// 		rightPaddleY = -1 * PADDLE_HEIGHT/2;
-				// 	} else {
-				// 		rightPaddleY += rPaddleSpeed;
-				// 	}
-				// }
 			} else { // move paddle back to middle
 				moveToTarget(canvas.height/2);
 			}
