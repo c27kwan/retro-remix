@@ -10,19 +10,21 @@
 		const FPS = 30;
 		const BALL_START_POS_X = 400, BALL_START_POS_Y = 250, BALL_RADIUS = 10, MAXIMUM_BALL_SPEED = 10;
 		const PADDLE_WIDTH = 100, PADDLE_HEIGHT = 10, PADDLE_Y = 460;
-		const BRICK_W = 80, BRICK_H = 20, BRICK_GAP = 2, BRICK_COLS = 10, BRICK_ROWS = 14;
+		const BRICK_W = 80, BRICK_H = 20, BRICK_GAP = 2, BRICK_COLS = 10, BRICK_ROWS = 10;
 
 		var canvas;
 		var canvasContext;
 		var ballX = BALL_START_POS_X, ballY = BALL_START_POS_Y;
-		var ballSpeedX = 3, ballSpeedY = 5;
+		var ballSpeedX, ballSpeedY;
 		var paddleX = 175;
 		var brickGrid = new Array(BRICK_COLS * BRICK_ROWS);
+		var counter;
 
 		window.onload = function() {
 			canvas = document.getElementById("gameCanvas");
 			canvasContext = canvas.getContext('2d');
 			
+			resetBall();
 			resetBricks();
 
 			setInterval(function() {
@@ -39,12 +41,20 @@
 		function resetBall() {
 			ballX = BALL_START_POS_X;
 			ballY = BALL_START_POS_Y;
+			ballSpeedX = 0;
+			ballSpeedY = 5;
 		}
 
 		function resetBricks() {
 			for(var i = 0; i < BRICK_COLS * BRICK_ROWS; ++i) {
-				brickGrid[i] = true;
+				if (i % BRICK_COLS < 3) {
+					brickGrid[i] = false;
+				} else {
+					brickGrid[i] = true;
+				}
 			}
+			counter = BRICK_COLS *(BRICK_ROWS -3);
+			console.log(counter);
 		}
 		function brickTileToIndex(row, col) {
 			return row * BRICK_COLS + col;
@@ -55,18 +65,41 @@
 		}
 
 		function checkAndRemoveBrickAtPixelCoord(pixelX, pixelY) {
-			row = Math.floor(pixelX / BRICK_W)
-			col = Math.floor(pixelY / BRICK_H)
+			var row = Math.floor(pixelX / BRICK_W)
+			var col = Math.floor(pixelY / BRICK_H)
 
 			if (row < BRICK_ROWS && col < BRICK_COLS) {
-				brickIndex = brickTileToIndex(row, col); 
+				var brickIndex = brickTileToIndex(row, col); 
+				
 				if (brickGrid[brickIndex]) {
+					var prevBallX = pixelX - ballSpeedX;
+					var prevBallY = pixelY - ballSpeedY;
+					var prevRow = Math.floor(prevBallX/ BRICK_W);
+					var prevCol = Math.floor(prevBallY/ BRICK_H);
+
+					var adjacentTileLR = brickTileToIndex(prevRow, col);
+					var adjacentTileTD = brickTileToIndex(row, prevCol);
+
+					if (prevRow != row && !brickGrid[adjacentTileLR]) {
+						ballSpeedX *= -1; 
+					}
+
+					if (prevCol != col && !brickGrid[adjacentTileTD]) {
+						ballSpeedY *= -1;
+					}
+
+					if (brickGrid[adjacentTileTD] && brickGrid[adjacentTileLR]) {
+						ballSpeedX *= -1;
+						ballSpeedY *= -1;
+
+					}
+
 					brickGrid[brickIndex] = false;
+					--counter;
 					return true;
-				} else {
-					return false;
 				}
 			}
+			return false;
 		}
 
 		function calculateMousePos(evt) {
@@ -94,7 +127,7 @@
 			canvasContext.fill();
 		}
 
-		function moveBall(hasHitBrick) {
+		function moveBall() {
 			if (ballX >= canvas.width - BALL_RADIUS) {
 				ballSpeedX *= -1;
 			}
@@ -107,10 +140,13 @@
 					deltaX = ballX - (paddleX + PADDLE_WIDTH/2)
 					ballSpeedX = deltaX * 0.4
 					ballSpeedY *= -1;
+					if (counter == 0) {
+						resetBricks();
+					}
 			} else if (ballY >= canvas.height) {
 				resetBall();
 			}
-			if (ballY <= 0 + BALL_RADIUS || hasHitBrick) {
+			if (ballY <= 0 + BALL_RADIUS) {
 				ballSpeedY *= -1;
 			}
 
@@ -139,9 +175,8 @@
 		}
 
 		function moveEverything() {
-			
-			hasHitBrick = checkAndRemoveBrickAtPixelCoord(ballX, ballY);
-			moveBall(hasHitBrick);
+			checkAndRemoveBrickAtPixelCoord(ballX, ballY);
+			moveBall();
 		}
 		
 	</script>
