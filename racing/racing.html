@@ -64,17 +64,19 @@
 			var row = Math.floor(pixelX / TRACK_W)
 			var col = Math.floor(pixelY / TRACK_H)
 
-			if (row < TRACK_ROWS && col < TRACK_COLS) {
+			if (row < TRACK_ROWS && col < TRACK_COLS && col >= 0 && row >= 0) {
+
 				var trackIndex = trackTileToIndex(col, row); 
 				
 				if (isTrackAtTileCoord(col, row)) {
 					var prevCarX = pixelX - carSpeedX;
 					var prevCarY = pixelY - carSpeedY;
-					var prevRow = Math.floor(prevCarX/ TRACK_W);
-					var prevCol = Math.floor(prevCarY/ TRACK_H);
 
-					var adjacentTileLR = trackTileToIndex(col, prevRow);
-					var adjacentTileTD = trackTileToIndex(prevCol, row);
+					var prevCol = Math.floor(prevCarX/ TRACK_W);
+					var prevRow = Math.floor(prevCarY/ TRACK_H);
+
+					var adjacentTileLR = trackTileToIndex(prevRow, col);
+					var adjacentTileTD = trackTileToIndex(row, prevCol);
 
 					if (prevRow != row && trackGrid[adjacentTileLR] != 1) {
 						carSpeedX *= -1; 

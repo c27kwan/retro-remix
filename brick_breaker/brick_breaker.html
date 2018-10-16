@@ -56,19 +56,19 @@
 			counter = BRICK_COLS *(BRICK_ROWS -3);
 			console.log(counter);
 		}
-		function brickTileToIndex(row, col) {
-			return row * BRICK_COLS + col;
+		function brickTileToIndex(col, row) {
+			return col * BRICK_ROWS + row;
 		}
 
-		function isBrickAtTileCoord(row, col) {
-			return brickGrid[brickTileToIndex(row, col)];
+		function isBrickAtTileCoord(col, row) {
+			return brickGrid[brickTileToIndex(col, row)];
 		}
 
 		function checkAndRemoveBrickAtPixelCoord(pixelX, pixelY) {
 			var row = Math.floor(pixelX / BRICK_W)
 			var col = Math.floor(pixelY / BRICK_H)
 
-			if (row < BRICK_ROWS && col < BRICK_COLS) {
+			if (row < BRICK_ROWS && col < BRICK_COLS && row >= 0 && col >= 0) {
 				var brickIndex = brickTileToIndex(col, row); 
 				
 				if (brickGrid[brickIndex]) {
