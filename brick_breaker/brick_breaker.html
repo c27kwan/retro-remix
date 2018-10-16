@@ -47,7 +47,7 @@
 
 		function resetBricks() {
 			for(var i = 0; i < BRICK_COLS * BRICK_ROWS; ++i) {
-				if (i % BRICK_COLS < 3) {
+				if (i < BRICK_COLS * 3) {
 					brickGrid[i] = false;
 				} else {
 					brickGrid[i] = true;
@@ -69,7 +69,7 @@
 			var col = Math.floor(pixelY / BRICK_H)
 
 			if (row < BRICK_ROWS && col < BRICK_COLS) {
-				var brickIndex = brickTileToIndex(row, col); 
+				var brickIndex = brickTileToIndex(col, row); 
 				
 				if (brickGrid[brickIndex]) {
 					var prevBallX = pixelX - ballSpeedX;
@@ -77,8 +77,8 @@
 					var prevRow = Math.floor(prevBallX/ BRICK_W);
 					var prevCol = Math.floor(prevBallY/ BRICK_H);
 
-					var adjacentTileLR = brickTileToIndex(prevRow, col);
-					var adjacentTileTD = brickTileToIndex(row, prevCol);
+					var adjacentTileLR = brickTileToIndex(col, prevRow);
+					var adjacentTileTD = brickTileToIndex(prevCol, row);
 
 					if (prevRow != row && !brickGrid[adjacentTileLR]) {
 						ballSpeedX *= -1; 
@@ -155,9 +155,9 @@
 		}
 
 		function drawBricks() {
-			for(var i = 0; i < BRICK_ROWS; ++i) {
-				for (var j = 0; j < BRICK_COLS; ++j) {
-					if (isBrickAtTileCoord(i, j)) {
+			for(var i = 0; i < BRICK_COLS; ++i) {
+				for (var j = 0; j < BRICK_ROWS; ++j) {
+					if (isBrickAtTileCoord(j, i)) {
 						colourRect(i * BRICK_W, j * BRICK_H, BRICK_W - BRICK_GAP, BRICK_H - BRICK_GAP,"blue");
 					}
 				}
