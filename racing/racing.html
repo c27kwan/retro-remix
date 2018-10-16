@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="utf-8" http-equiv="encoding" >
+	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+</head>
+<body>
+	<canvas id="gameCanvas" width="800" height="600"></canvas>
+	<script type="text/javascript">
+		const FPS = 30;
+		const BALL_START_POS_X = 425, BALL_START_POS_Y = 250, BALL_RADIUS = 10, MAXIMUM_BALL_SPEED = 10;
+		const TRACK_W = 40, TRACK_H = 40, TRACK_GAP = 1, TRACK_COLS = 20, TRACK_ROWS = 15;
+
+		var canvas;
+		var canvasContext;
+		var carX = BALL_START_POS_X, carY = BALL_START_POS_Y;
+		var carSpeedX, carSpeedY;
+		var trackGrid = new Array(TRACK_COLS * TRACK_ROWS);
+		var counter;
+
+		window.onload = function() {
+			canvas = document.getElementById("gameCanvas");
+			canvasContext = canvas.getContext('2d');
+			
+			resetCar();
+			resetTracks();
+
+			setInterval(function() {
+				moveEverything();
+				drawEverything();
+			}, 1000/FPS);
+		}
+
+		function resetCar() {
+			carX = BALL_START_POS_X;
+			carY = BALL_START_POS_Y;
+			carSpeedX = 0;
+			carSpeedY = 5;
+		}
+
+		function resetTracks() {
+			for(var i = 0; i < TRACK_COLS * TRACK_ROWS; ++i) {
+				trackGrid[i] = true;
+			}
+			counter = TRACK_COLS * TRACK_ROWS;
+		}
+		function trackTileToIndex(row, col) {
+			return row * TRACK_COLS + col;
+		}
+
+		function isTrackAtTileCoord(row, col) {
+			return trackGrid[trackTileToIndex(row, col)];
+		}
+
+		function checkAndRemoveTrackAtPixelCoord(pixelX, pixelY) {
+			var row = Math.floor(pixelX / TRACK_W)
+			var col = Math.floor(pixelY / TRACK_H)
+
+			if (row < TRACK_ROWS && col < TRACK_COLS) {
+				var trackIndex = trackTileToIndex(col, row); 
+				
+				if (isTrackAtTileCoord(col, row)) {
+					var prevCarX = pixelX - carSpeedX;
+					var prevCarY = pixelY - carSpeedY;
+					var prevRow = Math.floor(prevCarX/ TRACK_W);
+					var prevCol = Math.floor(prevCarY/ TRACK_H);
+
+					var adjacentTileLR = trackTileToIndex(prevRow, col);
+					var adjacentTileTD = trackTileToIndex(row, prevCol);
+
+					if (prevRow != row && !trackGrid[adjacentTileLR]) {
+						carSpeedX *= -1; 
+					}
+
+					if (prevCol != col && !trackGrid[adjacentTileTD]) {
+						carSpeedY *= -1;
+					}
+
+					if (trackGrid[adjacentTileTD] && trackGrid[adjacentTileLR]) {
+						carSpeedX *= -1;
+						carSpeedY *= -1;
+
+					}
+
+					trackGrid[trackIndex] = false;
+					--counter;
+					return true;
+				}
+			}
+			return false;
+		}
+
+		function colourRect(topX, topY, boxWidth, boxHeight, colour) {
+			canvasContext.fillStyle = colour;
+			canvasContext.fillRect(topX, topY, boxWidth, boxHeight);
+		}
+
+		function colourCircle(centerX, centerY, radius, colour) {
+			canvasContext.fillStyle = colour;
+			canvasContext.beginPath();
+			canvasContext.arc(centerX, centerY, radius, 0, Math.PI * 2, true);
+			canvasContext.fill();
+		}
+
+		function moveCar() {
+			if (carX >= canvas.width - BALL_RADIUS) {
+				carSpeedX *= -1;
+			}
+
+			if (carX <= 0 + BALL_RADIUS) {
+				carSpeedX *= -1;
+			}
+					// carSpeedY *= -1;
+					// if (counter == 0) {
+					// 	resetTracks();
+					// }
+			if (carY >= canvas.height) {
+				resetCar();
+			}
+			if (carY <= 0 + BALL_RADIUS) {
+				carSpeedY *= -1;
+			}
+
+			carX += carSpeedX;
+			carY += carSpeedY;
+		}
+
+		function drawTracks() {
+			for(var i = 0; i < TRACK_COLS; ++i) {
+				for (var j = 0; j < TRACK_ROWS; ++j) {
+					if (isTrackAtTileCoord(j, i)) {
+						colourRect(i * TRACK_W, j * TRACK_H, TRACK_W - TRACK_GAP, TRACK_H - TRACK_GAP,"blue");
+					}
+				}
+			}
+		}
+
+		function drawEverything() {
+			// draw board
+			colourRect(0, 0, canvas.width, canvas.height, "black");
+			drawTracks();
+			// draw car
+			colourCircle(carX, carY, BALL_RADIUS, "white");
+		}
+
+		function moveEverything() {
+			checkAndRemoveTrackAtPixelCoord(carX, carY);
+			moveCar();
+		}
+		
+	</script>
+</body>
+</html>
