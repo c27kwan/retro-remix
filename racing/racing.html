@@ -8,22 +8,36 @@
 	<canvas id="gameCanvas" width="800" height="600"></canvas>
 	<script type="text/javascript">
 		const FPS = 30;
-		const BALL_START_POS_X = 425, BALL_START_POS_Y = 250, BALL_RADIUS = 10, MAXIMUM_BALL_SPEED = 10;
+		const CAR_START_POS_X = 450, CAR_START_POS_Y = 250, CAR_RADIUS = 10, MAXIMUM_CAR_SPEED = 10;
 		const TRACK_W = 40, TRACK_H = 40, TRACK_GAP = 1, TRACK_COLS = 20, TRACK_ROWS = 15;
 
 		var canvas;
 		var canvasContext;
-		var carX = BALL_START_POS_X, carY = BALL_START_POS_Y;
+		var carX = CAR_START_POS_X, carY = CAR_START_POS_Y;
 		var carSpeedX, carSpeedY;
-		var trackGrid = new Array(TRACK_COLS * TRACK_ROWS);
-		var counter;
+
+		const trackGrid =
+		[ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		  1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
+		  1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+		  1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1,
+		  1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1,
+		  1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1,
+		  1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1,
+		  1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1,
+		  1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+		  1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+		  1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+		  1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1,
+		  1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1,
+		  1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1,
+		  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 
 		window.onload = function() {
 			canvas = document.getElementById("gameCanvas");
 			canvasContext = canvas.getContext('2d');
 			
 			resetCar();
-			resetTracks();
 
 			setInterval(function() {
 				moveEverything();
@@ -32,27 +46,21 @@
 		}
 
 		function resetCar() {
-			carX = BALL_START_POS_X;
-			carY = BALL_START_POS_Y;
+			carX = CAR_START_POS_X;
+			carY = CAR_START_POS_Y;
 			carSpeedX = 0;
 			carSpeedY = 5;
 		}
 
-		function resetTracks() {
-			for(var i = 0; i < TRACK_COLS * TRACK_ROWS; ++i) {
-				trackGrid[i] = true;
-			}
-			counter = TRACK_COLS * TRACK_ROWS;
-		}
 		function trackTileToIndex(row, col) {
 			return row * TRACK_COLS + col;
 		}
 
 		function isTrackAtTileCoord(row, col) {
-			return trackGrid[trackTileToIndex(row, col)];
+			return trackGrid[trackTileToIndex(row, col)] == 1;
 		}
 
-		function checkAndRemoveTrackAtPixelCoord(pixelX, pixelY) {
+		function bounceOffTrackAtPixelCoord(pixelX, pixelY) {
 			var row = Math.floor(pixelX / TRACK_W)
 			var col = Math.floor(pixelY / TRACK_H)
 
@@ -65,25 +73,22 @@
 					var prevRow = Math.floor(prevCarX/ TRACK_W);
 					var prevCol = Math.floor(prevCarY/ TRACK_H);
 
-					var adjacentTileLR = trackTileToIndex(prevRow, col);
-					var adjacentTileTD = trackTileToIndex(row, prevCol);
+					var adjacentTileLR = trackTileToIndex(col, prevRow);
+					var adjacentTileTD = trackTileToIndex(prevCol, row);
 
-					if (prevRow != row && !trackGrid[adjacentTileLR]) {
+					if (prevRow != row && trackGrid[adjacentTileLR] != 1) {
 						carSpeedX *= -1; 
 					}
 
-					if (prevCol != col && !trackGrid[adjacentTileTD]) {
+					if (prevCol != col && trackGrid[adjacentTileTD] != 1) {
 						carSpeedY *= -1;
 					}
 
-					if (trackGrid[adjacentTileTD] && trackGrid[adjacentTileLR]) {
+					if (trackGrid[adjacentTileTD] == 1 && trackGrid[adjacentTileLR] == 1) {
 						carSpeedX *= -1;
 						carSpeedY *= -1;
 
 					}
-
-					trackGrid[trackIndex] = false;
-					--counter;
 					return true;
 				}
 			}
@@ -103,21 +108,18 @@
 		}
 
 		function moveCar() {
-			if (carX >= canvas.width - BALL_RADIUS) {
+			if (carX >= canvas.width - CAR_RADIUS) {
 				carSpeedX *= -1;
 			}
 
-			if (carX <= 0 + BALL_RADIUS) {
+			if (carX <= 0 + CAR_RADIUS) {
 				carSpeedX *= -1;
 			}
-					// carSpeedY *= -1;
-					// if (counter == 0) {
-					// 	resetTracks();
-					// }
+
 			if (carY >= canvas.height) {
 				resetCar();
 			}
-			if (carY <= 0 + BALL_RADIUS) {
+			if (carY <= 0 + CAR_RADIUS) {
 				carSpeedY *= -1;
 			}
 
@@ -140,11 +142,11 @@
 			colourRect(0, 0, canvas.width, canvas.height, "black");
 			drawTracks();
 			// draw car
-			colourCircle(carX, carY, BALL_RADIUS, "white");
+			colourCircle(carX, carY, CAR_RADIUS, "white");
 		}
 
 		function moveEverything() {
-			checkAndRemoveTrackAtPixelCoord(carX, carY);
+			bounceOffTrackAtPixelCoord(carX, carY);
 			moveCar();
 		}
 		
