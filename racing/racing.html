@@ -8,7 +8,7 @@
 	<canvas id="gameCanvas" width="800" height="600"></canvas>
 	<script type="text/javascript">
 		const FPS = 30;
-		const CAR_START_POS_X = 450, CAR_START_POS_Y = 250, CAR_RADIUS = 10, MAXIMUM_CAR_SPEED = 10;
+		const CAR_START_POS_X = 450, CAR_START_POS_Y = 250, MAXIMUM_CAR_SPEED = 10;
 		const TRACK_W = 40, TRACK_H = 40, TRACK_GAP = 1, TRACK_COLS = 20, TRACK_ROWS = 15;
 
 		var canvas;
@@ -33,16 +33,27 @@
 		  1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1,
 		  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 
+		var carPic = document.createElement("img");
+		var carPicLoaded = false;
+
+		carPic.onload = function() {
+			carPicLoaded = true;
+		}
+
 		window.onload = function() {
 			canvas = document.getElementById("gameCanvas");
 			canvasContext = canvas.getContext('2d');
-			
+
+			carPic.src = "blue_car.png";
+			carPic.height = 20;
+			carPic.width = 10;
 			resetCar();
 
 			setInterval(function() {
 				moveEverything();
 				drawEverything();
 			}, 1000/FPS);
+
 		}
 
 		function resetCar() {
@@ -110,23 +121,29 @@
 		}
 
 		function moveCar() {
-			if (carX >= canvas.width - CAR_RADIUS) {
+			if (carX >= canvas.width) {
 				carSpeedX *= -1;
 			}
 
-			if (carX <= 0 + CAR_RADIUS) {
+			if (carX <= 0) {
 				carSpeedX *= -1;
 			}
 
 			if (carY >= canvas.height) {
 				resetCar();
 			}
-			if (carY <= 0 + CAR_RADIUS) {
+			if (carY <= 0) {
 				carSpeedY *= -1;
 			}
 
 			carX += carSpeedX;
 			carY += carSpeedY;
+		}
+
+		function drawCar() {
+			if (carPicLoaded) {
+				canvasContext.drawImage(carPic, carX - carPic.width/2, carY - carPic.height/2);
+			}
 		}
 
 		function drawTracks() {
@@ -143,8 +160,8 @@
 			// draw board
 			colourRect(0, 0, canvas.width, canvas.height, "black");
 			drawTracks();
-			// draw car
-			colourCircle(carX, carY, CAR_RADIUS, "white");
+
+			drawCar();
 		}
 
 		function moveEverything() {
