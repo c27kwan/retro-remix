@@ -8,20 +8,19 @@ window.onload = function() {
 	canvasContext = canvas.getContext('2d');
 	
 	carInit();
+	initInput();
+	loadImages();
+}
 
+function startGame() {
 	setInterval(function() {
 		moveEverything();
 		drawEverything();
 	}, 1000/FPS);
-
-	initInput();
 }
 
 function drawEverything() {
-	// draw board
-	colourRect(0, 0, canvas.width, canvas.height, "black");
 	drawTracks();
-
 	drawCar();
 }
 

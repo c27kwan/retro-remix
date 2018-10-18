@@ -1,4 +1,4 @@
-const TRACK_W = 40, TRACK_H = 40, TRACK_GAP = 1, TRACK_COLS = 20, TRACK_ROWS = 15;
+const TRACK_W = 40, TRACK_H = 40, TRACK_COLS = 20, TRACK_ROWS = 15;
 const TRACK_ENUM = {
 	ROAD: 0,
 	WALL: 1,
@@ -45,7 +45,9 @@ function drawTracks() {
 	for(var i = 0; i < TRACK_COLS; ++i) {
 		for (var j = 0; j < TRACK_ROWS; ++j) {
 			if (isWallAtTileCoord(i, j)) {
-				colourRect(i * TRACK_W, j * TRACK_H, TRACK_W - TRACK_GAP, TRACK_H - TRACK_GAP,"blue");
+				canvasContext.drawImage(trackWallPic, i * TRACK_W, j * TRACK_H);
+			} else {
+				canvasContext.drawImage(trackRoadPic, i * TRACK_W, j * TRACK_H);
 			}
 		}
 	}

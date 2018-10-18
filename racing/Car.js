@@ -2,25 +2,16 @@ const GROUNDSPEED_DECAY_MULT = 0.94, DRIVE_POWER = 0.5, REVERSE_POWER = 0.2, TUR
 
 var carX, carY;
 var carSpeed;
-var carPic = document.createElement("img");
-var carPicLoaded = false;
 var carAng = -Math.PI/2;
 
-carPic.onload = function() {
-	carPicLoaded = true;
-}
-
 function carInit() {
-	carPic.src = "blue_car.png";
 	carPic.height = 20;
 	carPic.width = 10;
 	resetCar();
 }
 
 function drawCar() {
-	if (carPicLoaded) {
-		drawBitmapCenteredAtLocationWithRotation(carPic, carX, carY, carAng);
-	}
+	drawBitmapCenteredAtLocationWithRotation(carPic, carX, carY, carAng);
 }
 
 function resetCar() {
