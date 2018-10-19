@@ -1,39 +1,34 @@
 const KEY_LEFT_ARROW = 37, KEY_UP_ARROW = 38, KEY_RIGHT_ARROW = 39, KEY_DOWN_ARROW = 40;
-
-var keyHeld_Gas = false;
-var keyHeld_Reverse = false;
-var keyHeld_TurnLeft = false;
-var keyHeld_TurnRight = false;
-
+const KEY_LETTER_W = 87, KEY_LETTER_A = 65, KEY_LETTER_S = 83, KEY_LETTER_D = 68;
 
 function initInput() {
 	document.addEventListener("keydown", keyPressed);
 	document.addEventListener("keyup", keyReleased);
 }
 
-function setKeyHoldState(keyCode, state) {
+function setKeyHoldState(keyCode, thisCar, state) {
 	switch(keyCode) {
-		case KEY_DOWN_ARROW:
-			keyHeld_Reverse = state;
+		case thisCar.controlKeyForReverse:
+			thisCar.keyHeld_Reverse = state;
 			break;
-		case KEY_LEFT_ARROW:
-			keyHeld_TurnLeft = state;
+		case thisCar.controlKeyForTurnLeft:
+			thisCar.keyHeld_TurnLeft = state;
 			break;
-		case KEY_UP_ARROW:
-			keyHeld_Gas = state;
+		case thisCar.controlKeyForGas:
+			thisCar.keyHeld_Gas = state;
 			break;
-		case KEY_RIGHT_ARROW:
-			keyHeld_TurnRight = state;
+		case thisCar.controlKeyForTurnRight:
+			thisCar.keyHeld_TurnRight = state;
 			break; 
 	}
 }
 
 function keyPressed(evt) {
-	setKeyHoldState(evt.keyCode, true);
+	setKeyHoldState(evt.keyCode, p1, true);
 	evt.preventDefault();
 }
 
 function keyReleased(evt) {
-	setKeyHoldState(evt.keyCode, false);
+	setKeyHoldState(evt.keyCode, p1, false);
 }
 

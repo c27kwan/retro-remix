@@ -2,13 +2,15 @@ const FPS = 30;
 
 var canvas;
 var canvasContext;
+var p1 = new carClass();
 
 window.onload = function() {
 	canvas = document.getElementById("gameCanvas");
 	canvasContext = canvas.getContext('2d');
 	
-	carInit();
+	p1.carInit();
 	initInput();
+	p1.setupControls(KEY_UP_ARROW, KEY_DOWN_ARROW, KEY_LEFT_ARROW, KEY_RIGHT_ARROW);
 	loadImages();
 }
 
@@ -21,9 +23,9 @@ function startGame() {
 
 function drawEverything() {
 	drawTracks();
-	drawCar();
+	p1.drawCar();
 }
 
 function moveEverything() {
-	moveCar();
+	p1.moveCar();
 }
