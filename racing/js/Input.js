@@ -25,10 +25,12 @@ function setKeyHoldState(keyCode, thisCar, state) {
 
 function keyPressed(evt) {
 	setKeyHoldState(evt.keyCode, p1, true);
+	setKeyHoldState(evt.keyCode, p2, true);
 	evt.preventDefault();
 }
 
 function keyReleased(evt) {
 	setKeyHoldState(evt.keyCode, p1, false);
+	setKeyHoldState(evt.keyCode, p2, false);
 }
 

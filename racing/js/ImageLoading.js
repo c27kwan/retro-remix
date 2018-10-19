@@ -1,10 +1,6 @@
 var picsToLoad;
 var carPic = document.createElement("img");
-// var trackRoadPic = document.createElement("img");
-// var trackWallPic = document.createElement("img");
-// var trackGoalPic = document.createElement("img");
-// var treePic = document.createElement("img");
-// var conePic = document.createElement("img");
+var car2Pic = document.createElement("img");
 
 var trackPics = [];
 
@@ -30,6 +26,8 @@ function beginLoadingImage(pic, source) {
 function loadImages() {
 	var imageList = [
 		{varName: carPic, fileName: "blue_car.png"},
+		{varName: car2Pic, fileName: "green_car.png"},
+
 		{trackType: TRACK_ENUM.WALL, fileName: "wall.png"},
 		{trackType: TRACK_ENUM.ROAD, fileName: "road.png"},
 		{trackType: TRACK_ENUM.GOAL, fileName: "goal.png"},
