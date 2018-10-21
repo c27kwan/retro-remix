@@ -27,6 +27,8 @@ function warriorClass() {
 	}
 
 	this.reset = function() {
+		this.numKeysHeld = 0;
+
 		if (this.homeX == undefined) {
 			for (var i = 0; i < roomGrid.length; ++i) {
 				if (roomGrid[i] == TILE.PLAYER) {
@@ -64,14 +66,35 @@ function warriorClass() {
 		}
 
 
+		nextTileIndex = getTileIndexAtPixelCoord(nextX, nextY);
+		if (nextTileIndex != undefined) {
+			nextTileType = roomGrid[nextTileIndex];
+		} else {
+			nextTileType = TILE.WALL;
+		}
 
-		nextTileType = getTileAtPixelCoord(nextX, nextY);
-		
-		if (nextTileType == TILE.FLOOR) {
-			this.x = nextX;
-			this.y = nextY;
-		} else if (nextTileType == TILE.GOAL) {
-			this.reset();
+		switch(nextTileType) {
+			case TILE.FLOOR:
+				this.x = nextX;
+				this.y = nextY;
+				break;
+			case TILE.GOAL:
+				this.reset();
+				break;
+			case TILE.DOOR:
+				if (this.numKeysHeld > 0) {
+					--this.numKeysHeld;
+					roomGrid[nextTileIndex] = TILE.FLOOR;
+				}
+				break;
+			case TILE.KEY:
+				++this.numKeysHeld;
+				roomGrid[nextTileIndex] = TILE.FLOOR;
+				break;
+			case TILE.WALL:
+			default:
+				break;
+
 		}
 	}
 }
