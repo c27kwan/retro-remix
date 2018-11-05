@@ -8,9 +8,6 @@ function initInput() {
 
 function setKeyHoldState(keyCode, thisShip, state) {
 	switch(keyCode) {
-		case thisShip.controlKeyForReverse:
-			thisShip.keyHeld_Reverse = state;
-			break;
 		case thisShip.controlKeyForTurnLeft:
 			thisShip.keyHeld_TurnLeft = state;
 			break;

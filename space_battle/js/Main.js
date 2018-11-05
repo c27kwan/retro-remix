@@ -10,7 +10,7 @@ window.onload = function() {
 	
 
 	initInput();
-	p1.setupControls(KEY_UP_ARROW, KEY_DOWN_ARROW, KEY_LEFT_ARROW, KEY_RIGHT_ARROW);
+	p1.setupControls(KEY_UP_ARROW, KEY_LEFT_ARROW, KEY_RIGHT_ARROW);
 	loadImages();
 }
 

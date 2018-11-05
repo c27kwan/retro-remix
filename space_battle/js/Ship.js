@@ -1,14 +1,12 @@
-const GROUNDSPEED_DECAY_MULT = 0.94, DRIVE_POWER = 0.5, REVERSE_POWER = 0.2, TURN_RATE = 0.03, MIN_TURN_SPEED = DRIVE_POWER;
+const SPACESPEED_DECAY_MULT = 0.99, THRUST_POWER = 0.5, TURN_RATE = 0.03;
 
 function shipClass() {
 	this.keyHeld_Gas = false;
-	this.keyHeld_Reverse = false;
 	this.keyHeld_TurnLeft = false;
 	this.keyHeld_TurnRight = false;
 
-	this.setupControls = function(forwardKey, backKey, leftKey, rightKey) {
+	this.setupControls = function(forwardKey, leftKey, rightKey) {
 		this.controlKeyForGas = forwardKey;
-		this.controlKeyForReverse = backKey;
 		this.controlKeyForTurnLeft = leftKey;
 		this.controlKeyForTurnRight = rightKey;
 	}
@@ -31,25 +29,36 @@ function shipClass() {
 
 	this.move = function () {
 		if (this.keyHeld_Gas) {
-			this.speed += DRIVE_POWER;
+			this.speed += THRUST_POWER;
 		}
-		if (this.keyHeld_Reverse) {
-			this.speed -= REVERSE_POWER;
-		}
-		if (Math.abs(this.speed) >= MIN_TURN_SPEED) { // don't turn in place
-			if (this.keyHeld_TurnLeft) {
-				this.ang -= TURN_RATE* Math.PI;
-			}
 
-			if (this.keyHeld_TurnRight){
-				this.ang += TURN_RATE * Math.PI;
-			}
-		}
+        if (this.keyHeld_TurnLeft) {
+            this.ang -= TURN_RATE * Math.PI;
+        }
+
+        if (this.keyHeld_TurnRight) {
+            this.ang += TURN_RATE * Math.PI;
+        }
 
 		var nextX = this.x + Math.cos(this.ang) * this.speed;
 		var nextY = this.y + Math.sin(this.ang) * this.speed;
 		this.x = nextX;
 		this.y = nextY;
-		this.speed *= GROUNDSPEED_DECAY_MULT;
+		this.speed *= SPACESPEED_DECAY_MULT;
+		this.handleScreenWrap();
+	}
+
+	this.handleScreenWrap = function() {
+		if (this.x + playerPic.width/2 > canvas.width) {
+			this.x -= canvas.width;
+		} else if (this.x + playerPic.width/2 < 0) {
+			this.x += canvas.width;
+		}
+
+		if (this.y + playerPic.height/2 > canvas.height) {
+			this.y -= canvas.height;
+		} else if (this.y + playerPic.height/2 < 0) {
+			this.y += canvas.height;
+		}
 	}
 }
