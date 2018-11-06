@@ -23,28 +23,29 @@ function shipClass() {
 	this.reset = function() {
 		this.x = canvas.width/2;
 		this.y = canvas.height/2;
-		this.speed = 0;
+		this.driftX = 0;
+		this.driftY = 0;
 		this.ang = -Math.PI/2;
 	}
 
 	this.move = function () {
 		if (this.keyHeld_Gas) {
-			this.speed += THRUST_POWER;
-		}
-
-        if (this.keyHeld_TurnLeft) {
-            this.ang -= TURN_RATE * Math.PI;
+            if (this.keyHeld_TurnLeft) {
+                this.ang -= TURN_RATE * Math.PI;
+            }
+            if (this.keyHeld_TurnRight) {
+                this.ang += TURN_RATE * Math.PI;
+            }
+            this.driftX += Math.cos(this.ang) * THRUST_POWER;
+            this.driftY += Math.sin(this.ang) * THRUST_POWER;
         }
 
-        if (this.keyHeld_TurnRight) {
-            this.ang += TURN_RATE * Math.PI;
-        }
-
-		var nextX = this.x + Math.cos(this.ang) * this.speed;
-		var nextY = this.y + Math.sin(this.ang) * this.speed;
+		var nextX = this.x + this.driftX;
+		var nextY = this.y + this.driftY;
 		this.x = nextX;
 		this.y = nextY;
-		this.speed *= SPACESPEED_DECAY_MULT;
+		this.driftX *= SPACESPEED_DECAY_MULT;
+		this.driftY *= SPACESPEED_DECAY_MULT;
 		this.handleScreenWrap();
 	}
 
