@@ -5,18 +5,21 @@ function shipClass() {
 	this.keyHeld_TurnLeft = false;
 	this.keyHeld_TurnRight = false;
 
-	this.setupControls = function(forwardKey, leftKey, rightKey) {
+	this.setupControls = function(forwardKey, leftKey, rightKey, fireKey) {
 		this.controlKeyForGas = forwardKey;
 		this.controlKeyForTurnLeft = leftKey;
 		this.controlKeyForTurnRight = rightKey;
+		this.controlKeyForFire = fireKey;
 	}
 
 	this.init = function(pic) {
+		this.shot = new shotClass();
 		this.bitmap = pic;
 		this.reset();
 	}
 
 	this.draw = function () {
+		this.shot.draw();
 		drawBitmapCenteredAtLocationWithRotation(this.bitmap, this.x, this.y, this.ang);
 	}
 
@@ -26,6 +29,7 @@ function shipClass() {
 		this.driftX = 0;
 		this.driftY = 0;
 		this.ang = -Math.PI/2;
+		this.shot.reset();
 	}
 
 	this.move = function () {
@@ -47,6 +51,7 @@ function shipClass() {
 		this.driftX *= SPACESPEED_DECAY_MULT;
 		this.driftY *= SPACESPEED_DECAY_MULT;
 		this.handleScreenWrap();
+		this.shot.move();
 	}
 
 	this.handleScreenWrap = function() {
@@ -62,4 +67,10 @@ function shipClass() {
 			this.y += canvas.height;
 		}
 	}
+
+	this.fireCannon = function () {
+		if (this.shot.isReadyToFire()) {
+            this.shot.shootFrom(this);
+        }
+    }
 }
